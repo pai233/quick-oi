@@ -223,6 +223,7 @@ function activate(context) {
 													 });
 		console.log(panel);
 		panel.webview.html=LG_BuildProblemPages(ProblemJson);
+		vscode.window.showInformationMessage('题目获取完毕！');
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.vijos.problem',async function () {
@@ -246,7 +247,7 @@ function activate(context) {
 														retainContextWhenHidden: true
 													 });
 		panel.webview.html=HTML_Show;
-
+		vscode.window.showInformationMessage('题目获取完毕！');
 	})
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.about',async function () {
