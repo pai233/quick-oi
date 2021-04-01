@@ -1,0 +1,89 @@
+{
+  "name": "quick-oi",
+  "displayName": "Quick OI",
+  "description": "Learning OI better.",
+  "version": "1.0.0",
+  "author": {
+    "email": "gugugupai233@gmail.com",
+    "name": "pai233",
+    "url": "https://github.com/pai233"
+  },
+  "publisher": "pai233",
+  "engines": {
+    "vscode": "^1.52.0"
+  },
+  "categories": [
+    "Snippets",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:quick-oi.luogu.problem",
+    "onCommand:quick-oi.vijos.problem",
+    "onCommand:quick-oi.about"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pai233/quick-oi"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/pai233/quick-oi/issues",
+    "email": "gugugupai233@gmail.com"
+  },
+  "icon": "https://i.loli.net/2021/03/21/rqaAsPMKhvYTUNo.png",
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "quick-oi.luogu.problem",
+        "title": "Luogu: Watch Problem"
+      },
+      {
+        "command": "quick-oi.vijos.problem",
+        "title": "Vijos: Watch Problem"
+      }
+      ,
+      {
+        "command": "quick-oi.about",
+        "title": "Quick OI: About"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "quick-oi.luogu.problem",
+        "key": "Ctrl+Alt+L Ctrl+Alt+P"
+      },
+      {
+        "command": "quick-oi.vijos.problem",
+        "key": "Ctrl+Alt+V Ctrl+Alt+P"
+      },
+      {
+        "command": "quick-oi.about",
+        "key": "Ctrl+Alt+Q A"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.4",
+    "@types/node": "^12.11.7",
+    "@types/vscode": "^1.54.0",
+    "eslint": "^7.19.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.2.1",
+    "typescript": "^4.1.3",
+    "vscode-test": "^1.5.0"
+  },
+  "dependencies": {
+    "@luogu-dev/markdown-it-katex": "^0.0.1",
+    "axios": "^0.21.1",
+    "axios-cookiejar-support": "^1.0.1",
+    "markdown-it": "^12.0.4",
+    "tough-cookie": "^4.0.0"
+  }
+}
