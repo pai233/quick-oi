@@ -10,7 +10,7 @@
   },
   "publisher": "pai233",
   "engines": {
-    "vscode": "^1.52.0"
+    "vscode": "^1.54.0"
   },
   "categories": [
     "Snippets",
@@ -30,7 +30,7 @@
     "url": "https://github.com/pai233/quick-oi/issues",
     "email": "gugugupai233@gmail.com"
   },
-  "icon": "https://i.loli.net/2021/03/21/rqaAsPMKhvYTUNo.png",
+  "icon": "icon.png",
   "main": "./extension.js",
   "contributes": {
     "commands": [
