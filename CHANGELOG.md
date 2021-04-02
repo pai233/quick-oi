@@ -1,9 +1,6 @@
 # Change Log
 
-All notable changes to the "quick-oi" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+## V1.0.0(20210402)
+新增：
+* 洛谷：查看题目
+* Vijos：查看题目
