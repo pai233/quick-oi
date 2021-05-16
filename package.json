@@ -2,7 +2,7 @@
   "name": "quick-oi",
   "displayName": "Quick OI",
   "description": "Learning OI better.",
-  "version": "1.0.0",
+  "version": "1.1.1007",
   "author": {
     "email": "gugugupai233@gmail.com",
     "name": "pai233",
@@ -16,10 +16,31 @@
     "Snippets",
     "Other"
   ],
+  "keywords": [
+		"luogu",
+		"algorithm",
+		"OI",
+		"洛谷",
+		"OJ",
+		"OnlineJudge",
+		"Vijos",
+		"NOIp",
+		"CSP",
+		"ACM",
+		"judge",
+		"C++",
+		"Pascal",
+		"信息学",
+		"奥赛",
+    "模板",
+    "Templates"
+	],
   "activationEvents": [
     "onCommand:quick-oi.luogu.problem",
     "onCommand:quick-oi.vijos.problem",
-    "onCommand:quick-oi.about"
+    "onCommand:quick-oi.about",
+    "onCommand:quick-oi.templates.import",
+    "onCommand:quick-oi.templates.settings"
   ],
   "repository": {
     "type": "git",
@@ -39,6 +60,10 @@
         "title": "Luogu: Watch Problem"
       },
       {
+        "command": "quick-oi.templates.import",
+        "title": "Templates: Import"
+      },
+      {
         "command": "quick-oi.vijos.problem",
         "title": "Vijos: Watch Problem"
       }
@@ -46,9 +71,17 @@
       {
         "command": "quick-oi.about",
         "title": "Quick OI: About"
+      },
+      {
+        "command": "quick-oi.templates.settings",
+        "title": "Templates: Settings"
       }
     ],
     "keybindings": [
+      {
+        "command": "quick-oi.templates.import",
+        "key": "Ctrl+Alt+T Ctrl+Alt+I"
+      },
       {
         "command": "quick-oi.luogu.problem",
         "key": "Ctrl+Alt+L Ctrl+Alt+P"
@@ -60,6 +93,10 @@
       {
         "command": "quick-oi.about",
         "key": "Ctrl+Alt+Q A"
+      },
+      {
+        "command": "quick-oi.templates.settings",
+        "key": "Ctrl+Alt+T Ctrl+Alt+S"
       }
     ]
   },

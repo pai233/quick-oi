@@ -5,6 +5,8 @@ const katex = require("@luogu-dev/markdown-it-katex");
 const MarkdownIt = require('markdown-it');
 const Cookies = require('tough-cookie');
 const CookieSupport = require("axios-cookiejar-support").default;
+const fs = require('fs');
+const Child_Process=require('child_process');
 //设定常量
 const UserAgent='QuickOI/1.0.0';
 const LG_Difficulty=['暂无评定','入门','普及-','普及/提高-','普及+/提高','提高+/省选-','省选/NOI-','NOI/NOI+/CTSC'];
@@ -209,51 +211,95 @@ function activate(context) {
 	console.log('Quick OI Active.');
 
 	let disposable = vscode.commands.registerCommand('quick-oi.luogu.problem', async function () {
-		var LG_PID=await vscode.window.showInputBox({
-			placeHolder: '请输入题号',
-			ignoreFocusOut: true
-		});
-		var ProblemJson=await LG_API.get('/problem/'+LG_PID+'?_contentOnly');
-		console.log(ProblemJson,ProblemJson.data.currentData.problem.pid);
-		const panel=vscode.window.createWebviewPanel(ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
-													 ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
-													 vscode.ViewColumn.Two,{
-														enableScripts: true,
-														retainContextWhenHidden: true
-													 });
-		console.log(panel);
-		panel.webview.html=LG_BuildProblemPages(ProblemJson);
-		vscode.window.showInformationMessage('题目获取完毕！');
+		try{
+			var LG_PID=await vscode.window.showInputBox({
+				placeHolder: '请输入题号',
+				ignoreFocusOut: true
+			});
+			var ProblemJson=await LG_API.get('/problem/'+LG_PID+'?_contentOnly');
+			console.log(ProblemJson,ProblemJson.data.currentData.problem.pid);
+			const panel=vscode.window.createWebviewPanel(ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
+														 ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
+														 vscode.ViewColumn.Two,{
+															enableScripts: true,
+															retainContextWhenHidden: true
+														 });
+			console.log(panel);
+			panel.webview.html=LG_BuildProblemPages(ProblemJson);
+			vscode.window.showInformationMessage('题目获取完毕！');
+		}catch(err){
+			//TODO：读取本地缓存
+			vscode.window.showErrorMessage('获取题目失败，请检查网络连接或题号！');
+		}
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.vijos.problem',async function () {
-		var VJ_PID=await vscode.window.showInputBox({
-			placeHolder: '请输入题号',
-			ignoreFocusOut: true
-		});
-		var ProblemHTML=(await VIJOS_API.get('/p/' + VJ_PID)).data;
-		// console.log(ProblemHTML);
-		console.log(ProblemHTML.split('h1'))
-		console.log(((ProblemHTML.split('h1')[1]).split('>')))
-		console.log(((ProblemHTML.split('h1')[1]).split('>')[1]).split('<'))
-		var Data=Split_Data(ProblemHTML.split('h1'),VJ_PID);
-		var HTML_Show=VJ_BuildProblemPages(Data);
-		// var VJ_ProblemTitle=((ProblemHTML.split('h1')[1]).split('>')[1]).split('<')[0];
-		// console.log(VJ_ProblemTitle);
-		const panel=vscode.window.createWebviewPanel(VJ_PID+'：'+Data[1],
-													 VJ_PID+'：'+Data[1],
-													 vscode.ViewColumn.Two,{
-														enableScripts: true,
-														retainContextWhenHidden: true
-													 });
-		panel.webview.html=HTML_Show;
-		vscode.window.showInformationMessage('题目获取完毕！');
+		try{
+			var VJ_PID=await vscode.window.showInputBox({
+				placeHolder: '请输入题号',
+				ignoreFocusOut: true
+			});
+			var ProblemHTML=(await VIJOS_API.get('/p/' + VJ_PID)).data;
+			// console.log(ProblemHTML);
+			console.log(ProblemHTML.split('h1'))
+			console.log(((ProblemHTML.split('h1')[1]).split('>')))
+			console.log(((ProblemHTML.split('h1')[1]).split('>')[1]).split('<'))
+			var Data=Split_Data(ProblemHTML.split('h1'),VJ_PID);
+			var HTML_Show=VJ_BuildProblemPages(Data);
+			// var VJ_ProblemTitle=((ProblemHTML.split('h1')[1]).split('>')[1]).split('<')[0];
+			// console.log(VJ_ProblemTitle);
+			const panel=vscode.window.createWebviewPanel(VJ_PID+'：'+Data[1],
+														 VJ_PID+'：'+Data[1],
+														 vscode.ViewColumn.Two,{
+															enableScripts: true,
+															retainContextWhenHidden: true
+														 });
+			panel.webview.html=HTML_Show;
+			vscode.window.showInformationMessage('题目获取完毕！');
+		}catch(err){
+			//TODO：读取本地缓存
+			vscode.window.showErrorMessage('获取题目失败，请检查网络连接或题号！');
+		}
 	})
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.about',async function () {
 		vscode.window.showInformationMessage('Quick OI V1.0.0 User-Agent:'+UserAgent);
 	})
 	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand('quick-oi.templates.import',async function () {
+		try{
+			var settings=JSON.parse((fs.readFileSync(__dirname+'/Templates/settings.json').toString()));
+			console.log(settings);
+			var file_name=await vscode.window.showQuickPick(settings.friendly_name,{
+				canPickMany: false,
+				ignoreFocusOut: true,
+				placeHolder: "请选择您要插入的模板"
+			}).then((choice)=>{
+				for(var i=0;i<ArrayLength(settings.friendly_name);i++){
+					if(settings.friendly_name[i]==choice){
+						return settings.file_name[i];
+					}
+				}
+				return undefined;
+			});
+			if(file_name==undefined)return;
+			vscode.window.activeTextEditor.edit(editBuilder => {
+				const end=new vscode.Position(vscode.window.activeTextEditor.document.lineCount+1,0);
+				editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), end),fs.readFileSync(__dirname+'/Templates/'+file_name).toString());
+			});
+		}catch(err){
+			vscode.window.showErrorMessage('Something was happened...');
+		}
+	});
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand('quick-oi.templates.settings',async function () {
+		vscode.workspace.openTextDocument(__dirname+'/Templates/settings.json').then(doc=>{
+			vscode.window.showTextDocument(doc);
+		});
+		Child_Process.exec('start '+__dirname+'/Templates');
+	})
+	context.subscriptions.push(disposable);
+	
 }
 
 // this method is called when your extension is deactivated

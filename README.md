@@ -7,14 +7,16 @@
 
 ## 在线评测类
 * 洛谷
-    + 查看题目
+    + 查看题目（快捷键：`Ctrl+Alt+L Ctrl+Alt+P`）
 * Vijos
-    + 查看题目
+    + 查看题目（快捷键：`Ctrl+Alt+V Ctrl+Alt+P`）
+
+## 模板类
+* 插入模板（快捷键：`Ctrl+Alt+T Ctrl+Alt+I`）
+* 模板设置修改（快捷键：`Ctrl+Alt+T Ctrl+Alt+S`）
 
 ## TODO LIST
 * 模板类
-    + 读取模板
-    + 自定义模板
     + 分享模板
 * Wiki类
     + 接入OI Wiki
