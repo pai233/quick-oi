@@ -256,7 +256,7 @@ function firstRun() {
 		"userSettings": [
 			{
 				"name": "系统模板组",
-				"dir": "${__dirname.replace('\\','/')+'/Templates'}"
+				"dir": "${__dirname.replace(/\\/g,'/')+'/Templates'}"
 			}
 		]
 	}`,{
