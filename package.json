@@ -2,7 +2,8 @@
   "name": "quick-oi",
   "displayName": "Quick OI",
   "description": "Learning OI better.",
-  "version": "1.1.1007",
+  "version": "1.1.1025",
+  "preview": true,
   "author": {
     "email": "gugugupai233@gmail.com",
     "name": "pai233",
@@ -36,11 +37,7 @@
     "Templates"
 	],
   "activationEvents": [
-    "onCommand:quick-oi.luogu.problem",
-    "onCommand:quick-oi.vijos.problem",
-    "onCommand:quick-oi.about",
-    "onCommand:quick-oi.templates.import",
-    "onCommand:quick-oi.templates.settings"
+    "*"
   ],
   "repository": {
     "type": "git",
@@ -69,10 +66,6 @@
       }
       ,
       {
-        "command": "quick-oi.about",
-        "title": "Quick OI: About"
-      },
-      {
         "command": "quick-oi.templates.settings",
         "title": "Templates: Settings"
       }
@@ -89,10 +82,6 @@
       {
         "command": "quick-oi.vijos.problem",
         "key": "Ctrl+Alt+V Ctrl+Alt+P"
-      },
-      {
-        "command": "quick-oi.about",
-        "key": "Ctrl+Alt+Q A"
       },
       {
         "command": "quick-oi.templates.settings",

@@ -1,5 +1,5 @@
 # **Quick OI**
-![title](icon_title.png)
+![title](doc/icon_title.png)
 
 > 只是想更好的学习OI罢了。
 
@@ -43,6 +43,7 @@
 ```bash
 git clone https://github.com/pai233/quick-oi.git
 cd quick-oi
+npm install
 code .
 ```
 随后按`F5`键进行调试。
@@ -52,6 +53,8 @@ code .
 
 # 参与贡献
 Fork本仓库，在进行您认为正确的修改后，可提起Pull Request。
+
+**此文档正在征求翻译。**
 
 # 捐赠
 XMR Address:`42zxTzwPkir3QbKUdr1ErGRhDM1o4pW3HU8dSxL4hrAoVMMqAzhmhByZDyPKENL8xPi4TR2AHx9riEv7KVFLH2R84gQuPCN`

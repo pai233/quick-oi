@@ -7,10 +7,11 @@ const Cookies = require('tough-cookie');
 const CookieSupport = require("axios-cookiejar-support").default;
 const fs = require('fs');
 const Child_Process=require('child_process');
-//设定常量
-const UserAgent='QuickOI/1.0.0';
-const LG_Difficulty=['暂无评定','入门','普及-','普及/提高-','普及+/提高','提高+/省选-','省选/NOI-','NOI/NOI+/CTSC'];
+const QUICK_OI_HOME = (process.env.HOME || process.env.USERPROFILE)+'/.quick_oi';
 var jar=new Cookies.CookieJar()
+/**
+ * @param {string} hostURL
+ */
 function SetAPI_Request(hostURL){//API设置函数
 	const Request=axios.create({
 		baseURL: hostURL,
@@ -24,7 +25,7 @@ function SetAPI_Request(hostURL){//API设置函数
 		defaults.transformRequest=[defaults.transformRequest];
 	}
 	defaults.transformRequest.push((data,headers)=>{
-		headers['User-Agent']=UserAgent;
+		headers['User-Agent']=defaultSettings.userAgent;
 		return data;
 	});
 	return CookieSupport(Request);
@@ -35,7 +36,19 @@ Markdown.use(katex);
 //定义API
 const LG_API=SetAPI_Request('https://www.luogu.com.cn');
 const VIJOS_API=SetAPI_Request('https://vijos.org');
+//设置
+var defaultSettings={};
+function readDefaultSettings() {
+	defaultSettings=JSON.parse(fs.readFileSync(__dirname+'/config.json',{
+		encoding: "UTF-8"
+	}).toString());
+	console.log(defaultSettings);
+}
+readDefaultSettings();
 //通用函数
+/**
+ * @param {any} Array
+ */
 function ArrayLength(Array) {
 	var length=0;
 	for(var i in Array){
@@ -44,12 +57,16 @@ function ArrayLength(Array) {
 	console.log(length);
 	return length;
 }
-function DeleteHtmlCode(str,is_title=false) {
+/**
+ * @param {string} str
+ */
+ function DeleteHtmlCode(str,is_title=false) {
+	console.log("delete")
 	if(!is_title){
 		var code=str.substring(1,str.length-2);
 		code=code.replace(/<h2>/g,"<h3>");
 		code=code.replace(/<\/h2>/g,"</h3>");
-		if(code.match('登录后递交')=='登录后递交')code=code.split('</div>')[0];
+		code=code.split('</div>')[0];
 		console.log(code);
 	}
 	else var code=str.split('>')[1].split('<')[0];
@@ -57,8 +74,11 @@ function DeleteHtmlCode(str,is_title=false) {
 	return code;
 }
 //Vijos专用函数
+/**
+ * @param {any[]} DataArray
+ * @param {string} PID
+ */
 function Split_Data(DataArray,PID) {
-	console.log(5%2);
 	var Data_Split=[];
 	Data_Split.push(PID);
 	Data_Split.push(DeleteHtmlCode(DataArray[1],true));//题目标题切割
@@ -66,6 +86,7 @@ function Split_Data(DataArray,PID) {
 		if(DataArray[i].match('section__title')=='section__title')break;
 		if(i % 2!=0)Data_Split.push(DeleteHtmlCode(DataArray[i]));
 		else Data_Split.push(DeleteHtmlCode(DataArray[i].substring(2,DataArray[i].length-1)));
+		console.log(Data_Split[Data_Split.length])
 	}
 	// Data_Split.push(DeleteHtmlCode(DataArray[8]));//背景
 	// Data_Split.push(DeleteHtmlCode(DataArray[10]));//描述
@@ -76,6 +97,9 @@ function Split_Data(DataArray,PID) {
 	console.log(Data_Split);
 	return Data_Split;
 }
+/**
+ * @param {any[]} DataArray
+ */
 function VJ_BuildProblemPages(DataArray){
 	console.log(DataArray.length);
 	var Body=``;
@@ -110,6 +134,9 @@ function VJ_BuildProblemPages(DataArray){
 	return HTML;
 }
 //洛谷专用函数
+/**
+ * @param {any[][]} Samples_Array
+ */
 function LG_SamplesGenerator(Samples_Array) {
 	var length=ArrayLength(Samples_Array);
 	if(length==0)return '无';
@@ -131,6 +158,9 @@ function LG_SamplesGenerator(Samples_Array) {
 	}
 	return Samples_Code;
 }
+/**
+ * @param {{ memory: any[]; time: any[]; }} LimitsJson
+ */
 function LG_LimitsGenerator(LimitsJson) {
 	//console.log(LimitsJson);
 	var length=ArrayLength(LimitsJson.memory);
@@ -157,6 +187,9 @@ function LG_LimitsGenerator(LimitsJson) {
 	console.log(code);
 	return code;
 }
+/**
+ * @param {import("axios").AxiosResponse<any>} ProblemJson
+ */
 function LG_BuildProblemPages(ProblemJson) {
 	var HTML=`
 	<!DOCTYPE html>
@@ -183,7 +216,7 @@ function LG_BuildProblemPages(ProblemJson) {
 			${Markdown.render(ProblemJson.data.currentData.problem.hint==""?'没有提示':ProblemJson.data.currentData.problem.hint)}
 			<br>
 			<br>
-			<b>题目难度：${LG_Difficulty[ProblemJson.data.currentData.problem.difficulty]}</b>
+			<b>题目难度：${defaultSettings.luoguConfig.difficulty[ProblemJson.data.currentData.problem.difficulty]}</b>
 			<br>
 			<b>总提交：${ProblemJson.data.currentData.problem.totalSubmit}</b>
 			<br>
@@ -204,12 +237,127 @@ function LG_BuildProblemPages(ProblemJson) {
 	//console.log(HTML)
 	return HTML;
 }
+function checkUpdated() {
+	
+}
+//首次安装
+function firstRun() {
+	var check_err=function (/** @type {null} */ err) {
+		if(err!=null){
+			vscode.window.showErrorMessage('初始化失败，可能有部分功能不可用！');
+			return;
+		}
+	}
+	fs.mkdir(QUICK_OI_HOME,(err)=>{
+		check_err();
+		console.log(QUICK_OI_HOME,err);
+	});
+	fs.writeFile(QUICK_OI_HOME+'/template_settings.json',`{
+		"userSettings": [
+			{
+				"name": "系统模板组",
+				"dir": "${__dirname.replace('\\','/')+'/Templates'}"
+			}
+		]
+	}`,{
+		encoding: 'utf-8'
+	},function (err) {
+		check_err();
+		console.log(err);
+	});
+	console.log(defaultSettings.version)
+	fs.writeFile(QUICK_OI_HOME+'/version',defaultSettings.version,{
+		encoding: 'base64'
+	},function (err) {
+		check_err();
+		console.log(err);
+	});
+	const panel=vscode.window.createWebviewPanel('Quick OI使用向导','Quick OI使用向导',vscode.ViewColumn.Two,{
+		enableScripts: true,
+		retainContextWhenHidden: true
+	 });
+
+	const html=`
+	<!DOCTYPE html>
+		<head>
+			<meta charset='UTF-8'>
+			<title>Quick OI Guide</title>
+			<style type="text/css">
+				table.imagetable {
+					font-family: verdana,arial,sans-serif;
+					font-size:11px;
+					color:#333333;
+					border-width: 1px;
+					border-color: #999999;
+					border-collapse: collapse;
+				}
+				table.imagetable th {
+					background:#b5cfd2 url('cell-blue.jpg');
+					border-width: 1px;
+					padding: 8px;
+					border-style: solid;
+					border-color: #999999;
+				}
+				table.imagetable td {
+					background:#dcddc0 url('cell-grey.jpg');
+					border-width: 1px;
+					padding: 8px;
+					border-style: solid;
+					border-color: #999999;
+				}
+			</style>
+		</head>
+		<body>
+	 		${Markdown.render(fs.readFileSync(__dirname+'/doc/guide.md').toString())}
+		</body>	 
+	`;
+	console.log(html)
+	panel.webview.html=html;
+}
+//检测函数
+function systemCheck() {
+	if(!fs.existsSync(QUICK_OI_HOME))firstRun();
+	checkUpdated();
+}
+//文件遍历
+/**
+ * @param {fs.PathLike} dir
+ * @param {(error: any, filename: any[], filepath: any[]) => void} [callback]
+ */
+async function filesTraversal(dir,callback) {
+	var filesPath=[];
+	var filesName=[];
+	fs.readdir(dir,function (/** @type {any} */ err, /** @type {any[]} */ files) {
+		if (err)
+			callback(err,null,null)
+		else {
+			let counter=0;
+			files.forEach(function (file_name) {
+				fs.stat(dir + "/" + file_name, async function (error, status) {
+					counter++
+					if (error)
+						return;
+					if (status.isFile()) {
+						filesPath.unshift(dir + "/" + file_name);
+						filesName.unshift(file_name);
+						console.log(filesPath, filesName);
+					}
+					console.log("counter:",counter,"ArrayLength:",ArrayLength(files))
+					if(counter===ArrayLength(files)){
+						console.log("callback")
+						callback(null,filesName,filesPath)
+					}
+				});
+			});
+		}
+	})
+	
+}
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
 	console.log('Quick OI Active.');
-
 	let disposable = vscode.commands.registerCommand('quick-oi.luogu.problem', async function () {
 		try{
 			var LG_PID=await vscode.window.showInputBox({
@@ -241,10 +389,12 @@ function activate(context) {
 			});
 			var ProblemHTML=(await VIJOS_API.get('/p/' + VJ_PID)).data;
 			// console.log(ProblemHTML);
-			console.log(ProblemHTML.split('h1'))
-			console.log(((ProblemHTML.split('h1')[1]).split('>')))
-			console.log(((ProblemHTML.split('h1')[1]).split('>')[1]).split('<'))
+			// console.log(ProblemHTML.split('h1'))
+			// console.log(((ProblemHTML.split('h1')[1]).split('>')))
+			// console.log(((ProblemHTML.split('h1')[1]).split('>')[1]).split('<'))
+			console.log("Split")
 			var Data=Split_Data(ProblemHTML.split('h1'),VJ_PID);
+			console.log("split done")
 			var HTML_Show=VJ_BuildProblemPages(Data);
 			// var VJ_ProblemTitle=((ProblemHTML.split('h1')[1]).split('>')[1]).split('<')[0];
 			// console.log(VJ_ProblemTitle);
@@ -262,44 +412,73 @@ function activate(context) {
 		}
 	})
 	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand('quick-oi.about',async function () {
-		vscode.window.showInformationMessage('Quick OI V1.0.0 User-Agent:'+UserAgent);
-	})
-	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.templates.import',async function () {
 		try{
-			var settings=JSON.parse((fs.readFileSync(__dirname+'/Templates/settings.json').toString()));
-			console.log(settings);
-			var file_name=await vscode.window.showQuickPick(settings.friendly_name,{
+			console.log("Import")
+			var Settings=JSON.parse((fs.readFileSync(QUICK_OI_HOME+'/template_settings.json').toString()));
+			console.log(Settings)
+			var TemplateGroup=[];
+			for(var i=0;i<ArrayLength(Settings.userSettings);i++){
+				TemplateGroup.push(Settings.userSettings[i].name);
+			}
+			console.log(TemplateGroup);
+			var templateDirName=await vscode.window.showQuickPick(TemplateGroup,{
 				canPickMany: false,
 				ignoreFocusOut: true,
-				placeHolder: "请选择您要插入的模板"
+				placeHolder: "请选择模板组"
 			}).then((choice)=>{
-				for(var i=0;i<ArrayLength(settings.friendly_name);i++){
-					if(settings.friendly_name[i]==choice){
-						return settings.file_name[i];
+				for(var i=0;i<ArrayLength(TemplateGroup);i++){
+					if(TemplateGroup[i]==choice){
+						return Settings.userSettings[i].dir;
 					}
 				}
 				return undefined;
 			});
-			if(file_name==undefined)return;
-			vscode.window.activeTextEditor.edit(editBuilder => {
-				const end=new vscode.Position(vscode.window.activeTextEditor.document.lineCount+1,0);
-				editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), end),fs.readFileSync(__dirname+'/Templates/'+file_name).toString());
+			if(templateDirName==undefined)return;
+			filesTraversal(templateDirName,async function(err,file_name,path) {
+				console.log(err,file_name,path)
+				if(err){
+					vscode.window.showErrorMessage('Something was happened...');
+					console.log("Error: filesTraversal")
+					return;
+				}
+				var templatePath=await vscode.window.showQuickPick(file_name,{
+					canPickMany: false,
+					ignoreFocusOut: true,
+					placeHolder: "请选择模板"
+				}).then((choice)=>{
+					for(var i=0;i<file_name.length;i++){
+						if(file_name[i]==choice){
+							return path[i];
+						}
+					}
+					return undefined;
+				});
+				console.log(templatePath)
+				try{
+					vscode.window.activeTextEditor.edit(editBuilder => {
+						const end=new vscode.Position(vscode.window.activeTextEditor.document.lineCount+1,0);
+						editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), end),fs.readFileSync(templatePath).toString());
+					});
+				}catch(err){
+					vscode.window.showErrorMessage("你没有编辑文档哦~")
+				}
 			});
 		}catch(err){
 			vscode.window.showErrorMessage('Something was happened...');
+			console.log(err)
 		}
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.templates.settings',async function () {
-		vscode.workspace.openTextDocument(__dirname+'/Templates/settings.json').then(doc=>{
-			vscode.window.showTextDocument(doc);
-		});
-		Child_Process.exec('start '+__dirname+'/Templates');
+		vscode.window.showInformationMessage('正在重修中……')
+		// vscode.workspace.openTextDocument(__dirname+'/Templates/settings.json').then(doc=>{
+		// 	vscode.window.showTextDocument(doc);
+		// });
+		// Child_Process.exec('start '+__dirname+'/Templates');
 	})
 	context.subscriptions.push(disposable);
-	
+	systemCheck()	
 }
 
 // this method is called when your extension is deactivated
@@ -308,4 +487,5 @@ function deactivate() {}
 module.exports = {
 	activate,
 	deactivate
+	
 }
