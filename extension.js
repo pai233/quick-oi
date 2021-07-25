@@ -237,42 +237,17 @@ function LG_BuildProblemPages(ProblemJson) {
 	//console.log(HTML)
 	return HTML;
 }
+//更新后的文件检测
 function checkUpdated() {
 	
 }
-//首次安装
-function firstRun() {
-	var check_err=function (/** @type {null} */ err) {
-		if(err!=null){
-			vscode.window.showErrorMessage('初始化失败，可能有部分功能不可用！');
-			return;
-		}
-	}
-	fs.mkdir(QUICK_OI_HOME,(err)=>{
-		check_err();
-		console.log(QUICK_OI_HOME,err);
-	});
-	fs.writeFile(QUICK_OI_HOME+'/template_settings.json',`{
-		"userSettings": [
-			{
-				"name": "系统模板组",
-				"dir": "${__dirname.replace(/\\/g,'/')+'/Templates'}"
-			}
-		]
-	}`,{
-		encoding: 'utf-8'
-	},function (err) {
-		check_err();
-		console.log(err);
-	});
-	console.log(defaultSettings.version)
-	fs.writeFile(QUICK_OI_HOME+'/version',defaultSettings.version,{
-		encoding: 'base64'
-	},function (err) {
-		check_err();
-		console.log(err);
-	});
-	const panel=vscode.window.createWebviewPanel('Quick OI使用向导','Quick OI使用向导',vscode.ViewColumn.Two,{
+//本地Markdown文档渲染
+/**
+ * @param {string} title
+ * @param {fs.PathLike} filename
+ */
+function LoadDoc(title,filename) {
+	const panel=vscode.window.createWebviewPanel(title,title,vscode.ViewColumn.Two,{
 		enableScripts: true,
 		retainContextWhenHidden: true
 	 });
@@ -308,11 +283,45 @@ function firstRun() {
 			</style>
 		</head>
 		<body>
-	 		${Markdown.render(fs.readFileSync(__dirname+'/doc/guide.md').toString())}
+	 		${Markdown.render(fs.readFileSync(filename).toString())}
 		</body>	 
 	`;
 	console.log(html)
 	panel.webview.html=html;
+}
+//首次安装
+function firstRun() {
+	var check_err=function (/** @type {null} */ err) {
+		if(err!=null){
+			vscode.window.showErrorMessage('初始化失败，可能有部分功能不可用！');
+			return;
+		}
+	}
+	fs.mkdir(QUICK_OI_HOME,(err)=>{
+		check_err();
+		console.log(QUICK_OI_HOME,err);
+	});
+	fs.writeFile(QUICK_OI_HOME+'/template_settings.json',`{
+		"userSettings": [
+			{
+				"name": "系统模板组",
+				"dir": "${__dirname.replace(/\\/g,'/')+'/Templates'}"
+			}
+		]
+	}`,{
+		encoding: 'utf-8'
+	},function (err) {
+		check_err();
+		console.log(err);
+	});
+	console.log(defaultSettings.version)
+	fs.writeFile(QUICK_OI_HOME+'/version',defaultSettings.version,{
+		encoding: 'base64'
+	},function (err) {
+		check_err();
+		console.log(err);
+	});
+	LoadDoc('Quick OI使用向导',__dirname+'/doc/guide.md');
 }
 //检测函数
 function systemCheck() {
@@ -471,10 +480,11 @@ function activate(context) {
 	});
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.templates.settings',async function () {
-		vscode.window.showInformationMessage('正在重修中……')
-		// vscode.workspace.openTextDocument(__dirname+'/Templates/settings.json').then(doc=>{
-		// 	vscode.window.showTextDocument(doc);
-		// });
+		//vscode.window.showInformationMessage('正在重修中……')
+		vscode.workspace.openTextDocument(QUICK_OI_HOME+'/template_settings.json').then(doc=>{
+			vscode.window.showTextDocument(doc);
+		});
+		LoadDoc('Quick OI模板设置向导',__dirname+'/doc/template_guide.md')
 		// Child_Process.exec('start '+__dirname+'/Templates');
 	})
 	context.subscriptions.push(disposable);
