@@ -10,6 +10,7 @@
 | 查看Vijos题目 | `Ctrl+Alt+V Ctrl+Alt+P` |Vijos: Watch Problem|
 | 插入模板  | `Ctrl+Alt+T Ctrl+Alt+I` |Templates: Import|
 | 模板设置修改 | `Ctrl+Alt+T Ctrl+Alt+S` |Templates: Settings|
+| 清除用户数据 | None |`Quick OI: Clear User Data`|
 
 # 如何使用
 
