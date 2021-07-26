@@ -2,7 +2,11 @@
 
 ![icon_title.png](https://i.loli.net/2021/05/20/zvtV8uTnDLamcWr.png)
 
-## V1.1.1122(20210726_dev)
+## V1.1.1123(20210726_dev-2)
+修复：
+* 选择模板时按`Esc`键退出报错
+
+## V1.1.1122(20210726_dev-1)
 新增：
 * 清除用户数据（按`F1`键，执行`Quick OI: Clear User Data`）
 * 自动更新用户配置

@@ -491,6 +491,9 @@ function activate(context) {
 					return undefined;
 				});
 				console.log(templatePath)
+				if(templatePath==undefined){
+					return;
+				}
 				try{
 					vscode.window.activeTextEditor.edit(editBuilder => {
 						const end=new vscode.Position(vscode.window.activeTextEditor.document.lineCount+1,0);
