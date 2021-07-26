@@ -1,5 +1,18 @@
 # Change Log
 
+![icon_title.png](https://i.loli.net/2021/05/20/zvtV8uTnDLamcWr.png)
+
+## V1.1.1122(20210726_dev)
+新增：
+* 清除用户数据（按`F1`键，执行`Quick OI: Clear User Data`）
+* 自动更新用户配置
+* 更新后展示CHANGELOG
+
+修复：
+* 初始化过程写入错误
+
+由于一开始的写入错误，旧版本用户更新后可能需要清除一次数据才能使用，不便之处，敬请原谅！
+
 ## V1.1.1076(20210725_dev)
 增强：
 * 模板设置

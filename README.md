@@ -15,6 +15,9 @@
 * 插入模板（快捷键：`Ctrl+Alt+T Ctrl+Alt+I`）
 * 模板设置修改（快捷键：`Ctrl+Alt+T Ctrl+Alt+S`）
 
+## 配置类
+* 清除用户数据（按`F1`键，执行`Quick OI: Clear User Data`）
+
 ## TODO LIST
 * 模板类
     + 分享模板

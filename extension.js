@@ -5,7 +5,7 @@ const katex = require("@luogu-dev/markdown-it-katex");
 const MarkdownIt = require('markdown-it');
 const Cookies = require('tough-cookie');
 const CookieSupport = require("axios-cookiejar-support").default;
-const fs = require('fs');
+const fs = require('fs-extra');
 const Child_Process=require('child_process');
 const QUICK_OI_HOME = (process.env.HOME || process.env.USERPROFILE)+'/.quick_oi';
 var jar=new Cookies.CookieJar()
@@ -239,7 +239,34 @@ function LG_BuildProblemPages(ProblemJson) {
 }
 //更新后的文件检测
 function checkUpdated() {
-	
+	//检查版本
+	var old_ver=fs.readFileSync(QUICK_OI_HOME+'/version',{
+		encoding: 'utf-8'
+	}).toString();
+	console.log(old_ver);
+	if(old_ver<defaultSettings.version){
+		//重设内置模板组文件夹路径
+		var oldTemplatesSettings=JSON.parse(fs.readFileSync(QUICK_OI_HOME+'/template_settings.json',{
+			encoding: 'utf-8'
+		}).toString())
+		oldTemplatesSettings.userSettings[0].dir=__dirname.replace(/\\/g,'/')+'/Templates';
+		fs.writeFile(QUICK_OI_HOME+'/template_settings.json',JSON.stringify(oldTemplatesSettings),function(err) {
+			if(err){
+				vscode.window.showErrorMessage('更新模板配置失败！')
+				return;
+			}
+			vscode.window.showInformationMessage('模板设置已更新！')
+		})
+		fs.writeFile(QUICK_OI_HOME+'/version',defaultSettings.version,{
+			encoding: 'utf-8'
+		},function (err) {
+			if(err){
+				console.log(err);
+				vscode.window.showInformationMessage('Quick OI:Files Error')
+			}
+		});
+		LoadDoc('Quick OI Changelog',__dirname+'/CHANGELOG.md')
+	}
 }
 //本地Markdown文档渲染
 /**
@@ -316,7 +343,7 @@ function firstRun() {
 	});
 	console.log(defaultSettings.version)
 	fs.writeFile(QUICK_OI_HOME+'/version',defaultSettings.version,{
-		encoding: 'base64'
+		encoding: 'utf-8'
 	},function (err) {
 		check_err();
 		console.log(err);
@@ -324,9 +351,9 @@ function firstRun() {
 	LoadDoc('Quick OI使用向导',__dirname+'/doc/guide.md');
 }
 //检测函数
-function systemCheck() {
+function init() {
 	if(!fs.existsSync(QUICK_OI_HOME))firstRun();
-	checkUpdated();
+	else checkUpdated();
 }
 //文件遍历
 /**
@@ -488,7 +515,16 @@ function activate(context) {
 		// Child_Process.exec('start '+__dirname+'/Templates');
 	})
 	context.subscriptions.push(disposable);
-	systemCheck()	
+	disposable = vscode.commands.registerCommand('quick-oi.data.clear',async function () {
+		vscode.window.showWarningMessage("你确定要清除用户数据吗？数据将会永久删除！","我确定！","算了吧！").then(value=>{
+			if(value==="我确定！"){
+				fs.removeSync(QUICK_OI_HOME);
+				vscode.window.showInformationMessage('已为您清除用户文件，请重新加载VS Code。');
+			}
+		})
+	})
+	context.subscriptions.push(disposable);
+	init()	
 }
 
 // this method is called when your extension is deactivated
