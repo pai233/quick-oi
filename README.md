@@ -57,7 +57,15 @@ code .
 # 参与贡献
 Fork本仓库，在进行您认为正确的修改后，可提起Pull Request。
 
-**此文档正在征求翻译。**
+**此文档正在征求翻译。**  
+
+# CHANGELOG
+[CHANGELOG.md](/CHANGELOG.md)
+
+# Thanks
+
+1. [axios 源码的理解 - 知乎](https://zhuanlan.zhihu.com/p/137272921)
+2. [luogu-api-docs](https://sjx233.github.io/luogu-api-docs/)
 
 # 捐赠
 XMR Address:`42zxTzwPkir3QbKUdr1ErGRhDM1o4pW3HU8dSxL4hrAoVMMqAzhmhByZDyPKENL8xPi4TR2AHx9riEv7KVFLH2R84gQuPCN`

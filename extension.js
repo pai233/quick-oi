@@ -6,7 +6,6 @@ const MarkdownIt = require('markdown-it');
 const Cookies = require('tough-cookie');
 const CookieSupport = require("axios-cookiejar-support").default;
 const fs = require('fs-extra');
-const Child_Process=require('child_process');
 const QUICK_OI_HOME = (process.env.HOME || process.env.USERPROFILE)+'/.quick_oi';
 var jar=new Cookies.CookieJar()
 /**
@@ -16,12 +15,12 @@ function SetAPI_Request(hostURL){//API设置函数
 	const Request=axios.create({
 		baseURL: hostURL,
 		withCredentials: true,
-		jar
+		jar: jar
 	  })
 	const defaults=axios.defaults;
 	if(!defaults.transformRequest){
 		defaults.transformRequest = [];
-	}else if(!(defaults.transformRequest instanceof Array)){
+	}else if(!(defaults.transformRequest instanceof Array)){//判断是否为数组
 		defaults.transformRequest=[defaults.transformRequest];
 	}
 	defaults.transformRequest.push((data,headers)=>{

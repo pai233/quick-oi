@@ -2,6 +2,10 @@
 
 ![icon_title.png](https://i.loli.net/2021/05/20/zvtV8uTnDLamcWr.png)
 
+## V1.1.1125(20210801_dev)
+新增：
+* 添加了几个内置模板
+
 ## V1.1.1123(20210726_dev-2)
 修复：
 * 选择模板时按`Esc`键退出报错
