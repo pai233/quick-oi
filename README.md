@@ -8,6 +8,7 @@
 ## 在线评测类
 * 洛谷
     + 查看题目（快捷键：`Ctrl+Alt+L Ctrl+Alt+P`）
+        - 缓存题目
 * Vijos
     + 查看题目（快捷键：`Ctrl+Alt+V Ctrl+Alt+P`）
 
@@ -62,7 +63,7 @@ Fork本仓库，在进行您认为正确的修改后，可提起Pull Request。
 # CHANGELOG
 [CHANGELOG.md](/CHANGELOG.md)
 
-# Thanks
+# 参考
 
 1. [axios 源码的理解 - 知乎](https://zhuanlan.zhihu.com/p/137272921)
 2. [luogu-api-docs](https://sjx233.github.io/luogu-api-docs/)

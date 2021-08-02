@@ -2,6 +2,10 @@
 
 ![icon_title.png](https://i.loli.net/2021/05/20/zvtV8uTnDLamcWr.png)
 
+## V1.1.2002(20210801_dev)
+新增：
+* 支持缓存洛谷题面
+
 ## V1.1.1125(20210801_dev)
 新增：
 * 添加了几个内置模板
