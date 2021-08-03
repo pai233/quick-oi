@@ -11,6 +11,7 @@
         - 缓存题目
 * Vijos
     + 查看题目（快捷键：`Ctrl+Alt+V Ctrl+Alt+P`）
+        - 缓存题目
 
 ## 模板类
 * 插入模板（快捷键：`Ctrl+Alt+T Ctrl+Alt+I`）

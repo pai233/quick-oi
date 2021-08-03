@@ -470,10 +470,27 @@ function activate(context) {
 															retainContextWhenHidden: true
 														 });
 			panel.webview.html=HTML_Show;
+			fs.writeFileSync(QUICK_OI_HOME+'/cache/Vijos-'+VJ_PID,HTML_Show,{
+				encoding: 'utf-8'
+			})
 			vscode.window.showInformationMessage('题目获取完毕！');
 		}catch(err){
-			//TODO：读取本地缓存
-			vscode.window.showErrorMessage('获取题目失败，请检查网络连接或题号！');
+			fs.readFile(QUICK_OI_HOME+'/cache/Vijos-'+VJ_PID,(err,cache)=>{
+				console.log(err,cache)
+				if(err){
+					vscode.window.showErrorMessage('获取题目失败，请检查网络连接或题号！');
+					return;
+				}
+				const panel=vscode.window.createWebviewPanel('Quick OI 题目缓存',
+														'Quick OI 题目缓存',
+														vscode.ViewColumn.Two,{
+															enableScripts: true,
+															retainContextWhenHidden: true
+														});
+				console.log(panel)
+				panel.webview.html=cache.toString();
+				vscode.window.showInformationMessage('题目在线获取失败，已为您读取缓存！');
+			})
 		}
 	})
 	context.subscriptions.push(disposable);
