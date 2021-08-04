@@ -2,6 +2,10 @@
 
 ![icon_title.png](https://i.loli.net/2021/05/20/zvtV8uTnDLamcWr.png)
 
+## V1.1.2234(20210804_dev)
+修复：
+* Vijos缓存题面未显示缓存时间
+
 ## V1.1.2233(20210803_dev)
 新增：
 * 支持缓存Vijos题面
