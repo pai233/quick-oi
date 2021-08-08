@@ -9,6 +9,8 @@
 * 洛谷
     + 查看题目（快捷键：`Ctrl+Alt+L Ctrl+Alt+P`）
         - 缓存题目
+    + 登录账号（快捷键：`Ctrl+Alt+L Ctrl+Alt+L`）
+    + 退出账号（快捷键：`Ctrl+Alt+L Ctrl+Alt+O`）    
 * Vijos
     + 查看题目（快捷键：`Ctrl+Alt+V Ctrl+Alt+P`）
         - 缓存题目

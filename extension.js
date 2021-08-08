@@ -9,6 +9,10 @@ const fs = require('fs-extra');
 const sillyDateTime = require('silly-datetime')
 const QUICK_OI_HOME = (process.env.HOME || process.env.USERPROFILE)+'/.quick_oi';
 var jar=new Cookies.CookieJar()
+var bar=vscode.window.createStatusBarItem()
+bar.tooltip="Quick OI StatusBar"
+bar.text="我的Quick OI状态"
+bar.show()
 /**
  * @param {string} hostURL
  */
@@ -17,17 +21,7 @@ function SetAPI_Request(hostURL){//API设置函数
 		baseURL: hostURL,
 		withCredentials: true,
 		jar: jar
-	  })
-	const defaults=axios.defaults;
-	if(!defaults.transformRequest){
-		defaults.transformRequest = [];
-	}else if(!(defaults.transformRequest instanceof Array)){//判断是否为数组
-		defaults.transformRequest=[defaults.transformRequest];
-	}
-	defaults.transformRequest.push((data,headers)=>{
-		headers['User-Agent']=defaultSettings.userAgent;
-		return data;
-	});
+	})
 	return CookieSupport(Request);
 }
 //Markdown设置
@@ -188,6 +182,27 @@ function LG_LimitsGenerator(LimitsJson) {
 	`
 	console.log(code);
 	return code;
+}
+/**
+ * @param {string} [api]
+ */
+async function getToken(api) {
+	let token=await LG_API.get(api,{jar: jar}).then(html=>{
+		var Token_REG=new RegExp(/<meta name="csrf-token" content="(.*)">/);
+		var execData=Token_REG.exec(html.data)
+		return execData ? execData[1].trim():null
+	})
+	return token;
+}
+async function getCaptcha() {
+	let captcha=await LG_API.get('api/verify/captcha',{
+		responseType: 'arraybuffer',
+		jar: jar,
+		params: {
+			'_t': new Date().getTime()
+		}
+	})
+	return "data:image/png;base64,"+captcha.data.toString("base64");
 }
 /**
  * @param {import("axios").AxiosResponse<any>} ProblemJson
@@ -574,7 +589,128 @@ function activate(context) {
 		})
 	})
 	context.subscriptions.push(disposable);
-	init()	
+	disposable = vscode.commands.registerCommand('quick-oi.luogu.login',async function () {
+		let username=await vscode.window.showInputBox({
+			ignoreFocusOut: true,
+			placeHolder: '请输入您的洛谷账号/手机号/邮箱'
+		})
+		if(!username)return;
+		let password=await vscode.window.showInputBox({
+			ignoreFocusOut: true,
+			placeHolder: '请输入您的密码',
+			password: true
+		})
+		if(!username)return;
+		let captchaBase64=await getCaptcha()
+		let panel=vscode.window.createWebviewPanel('洛谷验证码','洛谷验证码',vscode.ViewColumn.Two,{
+			enableScripts: true,
+			retainContextWhenHidden: true
+		});
+		panel.webview.html=`
+		<!doctype html>
+		<html>
+			<head>
+				<meta charset="utf-8">
+				<title>Captcha</title>
+				<script>
+					const vscode=acquireVsCodeApi()
+					function getCaptcha(){//向主进程请求验证码
+						vscode.postMessage({
+							code: 114514
+						})
+					}
+					window.addEventListener('message',event=>{
+						if(event.data.code===114514){//接收验证码
+							var DOM=document.getElementById("captcha");
+							DOM.src=event.data.base64;
+						}
+					})
+				</script>	
+			<head>
+			<body>
+				<div align="center">
+					<img src="https://cdn.luogu.com.cn/fe/logo.png" height="81" width="160" />
+				</div>
+				<div align="center">
+					<h2><font color=#6495ED>在洛谷，享受 Coding 的欢乐！</font></h2>
+				</div>
+				<div align="center">
+					<img id="captcha" src="${captchaBase64}">
+				</div>
+				<div align="center">
+					<a herf="javascript:void(0)" onclick="getCaptcha()">点击这里刷新验证码</a><br><b>Powered By Quick OI.</b>
+				</div>
+			</body>
+		</html>
+		`
+		panel.webview.onDidReceiveMessage(async message=>{
+			/**
+			 * @param {any} message
+			 */
+			switch (message.code){
+				case 114514://刷新验证码
+					let image=await getCaptcha();
+					panel.webview.postMessage({
+						code: 114514,
+						base64: image
+					})
+				}		
+		},undefined,context.subscriptions)
+		let captcha=await vscode.window.showInputBox({
+			placeHolder: '请输入验证码',
+			ignoreFocusOut: true
+		})
+		await LG_API.get('/auth/login',{jar: jar})
+		
+		let loginStatus=await LG_API.post('/api/auth/userPassLogin',{username,password,captcha},{
+			headers: {
+				'X-CSRF-TOKEN': await getToken('/auth/login'),
+				'Referer': 'https://www.luogu.com.cn/auth/login',
+				'Sec-Fetch-Dest': 'empty',
+				'Sec-Fetch-Mode': 'cors',
+				'Sec-Fetch-Site': 'same-origin',
+				'Origin': 'https://www.luogu.com.cn/',
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			jar: jar
+		}).catch(err=>{
+			if(err.response){
+				vscode.window.showErrorMessage(err.response.errorMessage);
+				return err;
+			}
+		})
+		console.log(loginStatus)
+		vscode.window.showInformationMessage("登陆成功！洛谷用户名为："+loginStatus.data.username)
+	})
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand('quick-oi.luogu.logout',async function () {
+		jar.getCookies("https://www.luogu.com.cn/",async (err,cookie)=>{
+			if(err){
+				vscode.window.showErrorMessage('Get Cookies err')
+				return;
+			}
+			var uid=cookie.find(_uid=>_uid.key==='_uid').value
+			if(uid==="0"){
+				vscode.window.showErrorMessage("你没有登录过啊QvQ")
+				return;
+			}
+			let logoutStatus=await LG_API.post("/api/auth/logout",null,{
+				jar: jar,
+				headers: {
+					'X-CSRF-Token': await getToken('/'),
+					'Referer': 'https://www.luogu.com.cn/',
+					'Sec-Fetch-Dest': 'empty',
+					'Sec-Fetch-Mode': 'cors',
+					'Sec-Fetch-Site': 'same-origin',
+					'Origin': 'https://www.luogu.com.cn/',
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			})
+			if(logoutStatus.data._empty)vscode.window.showInformationMessage("已为你退出洛谷账号！");
+		})
+	})
+	context.subscriptions.push(disposable);
+	init()
 }
 
 // this method is called when your extension is deactivated

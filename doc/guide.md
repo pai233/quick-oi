@@ -7,6 +7,8 @@
 | 组件        | 快捷键               |说明|
 | ------------- | ----------------------- |--------------|
 | 查看洛谷题目 | `Ctrl+Alt+L Ctrl+Alt+P` |Luogu: Watch Problem|
+| 登陆洛谷账号 | `Ctrl+Alt+L Ctrl+Alt+L` |Luogu: Login|
+| 退出洛谷账号 | `Ctrl+Alt+L Ctrl+Alt+O` |Luogu: Logout|
 | 查看Vijos题目 | `Ctrl+Alt+V Ctrl+Alt+P` |Vijos: Watch Problem|
 | 插入模板  | `Ctrl+Alt+T Ctrl+Alt+I` |Templates: Import|
 | 模板设置修改 | `Ctrl+Alt+T Ctrl+Alt+S` |Templates: Settings|

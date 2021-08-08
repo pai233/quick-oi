@@ -2,7 +2,7 @@
   "name": "quick-oi",
   "displayName": "Quick OI",
   "description": "Learning OI better.",
-  "version": "1.1.2234",
+  "version": "1.1.5050",
   "preview": true,
   "author": {
     "email": "gugugupai233@gmail.com",
@@ -57,6 +57,14 @@
         "title": "Luogu: Watch Problem"
       },
       {
+        "command": "quick-oi.luogu.login",
+        "title": "Luogu: Login"
+      },
+      {
+        "command": "quick-oi.luogu.logout",
+        "title": "Luogu: Logout"
+      },
+      {
         "command": "quick-oi.templates.import",
         "title": "Templates: Import"
       },
@@ -81,6 +89,14 @@
       {
         "command": "quick-oi.luogu.problem",
         "key": "Ctrl+Alt+L Ctrl+Alt+P"
+      },
+      {
+        "command": "quick-oi.luogu.login",
+        "key": "Ctrl+Alt+L Ctrl+Alt+L"
+      },
+      {
+        "command": "quick-oi.luogu.logout",
+        "key": "Ctrl+Alt+L Ctrl+Alt+O"
       },
       {
         "command": "quick-oi.vijos.problem",
