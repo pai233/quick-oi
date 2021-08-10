@@ -10,7 +10,8 @@
     + 查看题目（快捷键：`Ctrl+Alt+L Ctrl+Alt+P`）
         - 缓存题目
     + 登录账号（快捷键：`Ctrl+Alt+L Ctrl+Alt+L`）
-    + 退出账号（快捷键：`Ctrl+Alt+L Ctrl+Alt+O`）    
+    + 退出账号（快捷键：`Ctrl+Alt+L Ctrl+Alt+O`）
+    + 每日打卡（快捷键：`Ctrl+Alt+L Ctrl+Alt+F`）
 * Vijos
     + 查看题目（快捷键：`Ctrl+Alt+V Ctrl+Alt+P`）
         - 缓存题目
@@ -32,7 +33,6 @@
         - 查看题目
         - ……
     + 洛谷
-        - 登录账号
         - 搜索题目
         - 提交题目
         - ……  

@@ -187,22 +187,86 @@ function LG_LimitsGenerator(LimitsJson) {
  * @param {string} [api]
  */
 async function getToken(api) {
-	let token=await LG_API.get(api,{jar: jar}).then(html=>{
+	let token=await LG_API.get(api).then(html=>{
 		var Token_REG=new RegExp(/<meta name="csrf-token" content="(.*)">/);
 		var execData=Token_REG.exec(html.data)
 		return execData ? execData[1].trim():null
 	})
 	return token;
 }
-async function getCaptcha() {
-	let captcha=await LG_API.get('api/verify/captcha',{
-		responseType: 'arraybuffer',
-		jar: jar,
-		params: {
-			'_t': new Date().getTime()
-		}
+/**
+ * @param {{ dispose(): any; }[]} subscriptions
+ */
+async function showCaptcha(subscriptions) {
+	let getCaptcha= async function () {
+		let base64=await LG_API.get('api/verify/captcha',{
+			responseType: 'arraybuffer',
+			params: {
+				'_t': new Date().getTime()
+			}
+		})
+		return "data:image/png;base64,"+base64.data.toString("base64");
+	}
+	let base64=await getCaptcha();
+	let panel=vscode.window.createWebviewPanel('洛谷验证码','洛谷验证码',vscode.ViewColumn.Two,{
+		enableScripts: true,
+		retainContextWhenHidden: true
+	});
+	panel.webview.html=`
+	<!doctype html>
+	<html>
+		<head>
+			<meta charset="utf-8">
+			<title>Captcha</title>
+			<script>
+				const vscode=acquireVsCodeApi()
+				function getCaptcha(){//向主进程请求验证码
+					vscode.postMessage({
+						code: 114514
+					})
+				}
+				window.addEventListener('message',event=>{
+					if(event.data.code===114514){//接收验证码
+						var DOM=document.getElementById("captcha");
+						DOM.src=event.data.base64;
+					}
+				})
+			</script>	
+		<head>
+		<body>
+			<div align="center">
+				<img src="https://cdn.luogu.com.cn/fe/logo.png" height="81" width="160" />
+			</div>
+			<div align="center">
+				<h2><font color=#6495ED>在洛谷，享受 Coding 的欢乐！</font></h2>
+			</div>
+			<div align="center">
+				<img id="captcha" src="${base64}">
+			</div>
+			<div align="center">
+				<a herf="javascript:void(0)" onclick="getCaptcha()">点击这里刷新验证码</a><br><b>Powered By Quick OI.</b>
+			</div>
+		</body>
+	</html>
+	`
+	panel.webview.onDidReceiveMessage(async message=>{
+		/**
+		 * @param {any} message
+		 */
+		switch (message.code){
+			case 114514://刷新验证码
+				let image=await getCaptcha();
+				panel.webview.postMessage({
+					code: 114514,
+					base64: image
+				})
+			}		
+	},undefined,subscriptions)
+	let captcha=await vscode.window.showInputBox({
+		placeHolder: '请输入验证码',
+		ignoreFocusOut: true
 	})
-	return "data:image/png;base64,"+captcha.data.toString("base64");
+	return captcha
 }
 /**
  * @param {import("axios").AxiosResponse<any>} ProblemJson
@@ -510,7 +574,7 @@ function activate(context) {
 		}
 	})
 	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand('quick-oi.templates.import',async function () {
+	disposable = vscode.commands.registerCommand('quick-oi.template.import',async function () {
 		try{
 			console.log("Import")
 			var Settings=JSON.parse((fs.readFileSync(QUICK_OI_HOME+'/template_settings.json').toString()));
@@ -571,7 +635,7 @@ function activate(context) {
 		}
 	});
 	context.subscriptions.push(disposable);
-	disposable = vscode.commands.registerCommand('quick-oi.templates.settings',async function () {
+	disposable = vscode.commands.registerCommand('quick-oi.template.settings',async function () {
 		//vscode.window.showInformationMessage('正在重修中……')
 		vscode.workspace.openTextDocument(QUICK_OI_HOME+'/template_settings.json').then(doc=>{
 			vscode.window.showTextDocument(doc);
@@ -601,67 +665,7 @@ function activate(context) {
 			password: true
 		})
 		if(!username)return;
-		let captchaBase64=await getCaptcha()
-		let panel=vscode.window.createWebviewPanel('洛谷验证码','洛谷验证码',vscode.ViewColumn.Two,{
-			enableScripts: true,
-			retainContextWhenHidden: true
-		});
-		panel.webview.html=`
-		<!doctype html>
-		<html>
-			<head>
-				<meta charset="utf-8">
-				<title>Captcha</title>
-				<script>
-					const vscode=acquireVsCodeApi()
-					function getCaptcha(){//向主进程请求验证码
-						vscode.postMessage({
-							code: 114514
-						})
-					}
-					window.addEventListener('message',event=>{
-						if(event.data.code===114514){//接收验证码
-							var DOM=document.getElementById("captcha");
-							DOM.src=event.data.base64;
-						}
-					})
-				</script>	
-			<head>
-			<body>
-				<div align="center">
-					<img src="https://cdn.luogu.com.cn/fe/logo.png" height="81" width="160" />
-				</div>
-				<div align="center">
-					<h2><font color=#6495ED>在洛谷，享受 Coding 的欢乐！</font></h2>
-				</div>
-				<div align="center">
-					<img id="captcha" src="${captchaBase64}">
-				</div>
-				<div align="center">
-					<a herf="javascript:void(0)" onclick="getCaptcha()">点击这里刷新验证码</a><br><b>Powered By Quick OI.</b>
-				</div>
-			</body>
-		</html>
-		`
-		panel.webview.onDidReceiveMessage(async message=>{
-			/**
-			 * @param {any} message
-			 */
-			switch (message.code){
-				case 114514://刷新验证码
-					let image=await getCaptcha();
-					panel.webview.postMessage({
-						code: 114514,
-						base64: image
-					})
-				}		
-		},undefined,context.subscriptions)
-		let captcha=await vscode.window.showInputBox({
-			placeHolder: '请输入验证码',
-			ignoreFocusOut: true
-		})
-		await LG_API.get('/auth/login',{jar: jar})
-		
+		let captcha=await showCaptcha(context.subscriptions)		
 		let loginStatus=await LG_API.post('/api/auth/userPassLogin',{username,password,captcha},{
 			headers: {
 				'X-CSRF-TOKEN': await getToken('/auth/login'),
@@ -672,7 +676,6 @@ function activate(context) {
 				'Origin': 'https://www.luogu.com.cn/',
 				'X-Requested-With': 'XMLHttpRequest'
 			},
-			jar: jar
 		}).catch(err=>{
 			if(err.response){
 				vscode.window.showErrorMessage(err.response.errorMessage);
@@ -695,7 +698,6 @@ function activate(context) {
 				return;
 			}
 			let logoutStatus=await LG_API.post("/api/auth/logout",null,{
-				jar: jar,
 				headers: {
 					'X-CSRF-Token': await getToken('/'),
 					'Referer': 'https://www.luogu.com.cn/',
@@ -708,6 +710,22 @@ function activate(context) {
 			})
 			if(logoutStatus.data._empty)vscode.window.showInformationMessage("已为你退出洛谷账号！");
 		})
+	})
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand('quick-oi.luogu.fate',async function () {
+		let fateStatus=await LG_API.post('/index/ajax_punch',null,{
+			headers: {
+				'X-CSRF-Token': await getToken('/'),
+				'Referer': "https://www.luogu.com.cn/"
+			}
+		})
+		console.log(fateStatus)
+		if(fateStatus.data.code!=200){
+			vscode.window.showInformationMessage(fateStatus.data.message||fateStatus.data.data)
+		}
+		else{
+			vscode.window.showInformationMessage("打卡成功！")
+		}
 	})
 	context.subscriptions.push(disposable);
 	init()

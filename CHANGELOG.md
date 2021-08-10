@@ -2,6 +2,13 @@
 
 ![icon_title.png](https://i.loli.net/2021/05/20/zvtV8uTnDLamcWr.png)
 
+## V1.1.5876(20210809_dev)
+新增：
+* 洛谷每日打卡（快捷键：`Ctrl+Alt+L Ctrl+Alt+F`）
+
+修复：
+* 修改了部分文案
+
 ## V1.1.5050(20210808_dev)
 新增：
 * 登录洛谷账号（快捷键：`Ctrl+Alt+L Ctrl+Alt+L`）

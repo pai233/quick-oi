@@ -2,7 +2,7 @@
   "name": "quick-oi",
   "displayName": "Quick OI",
   "description": "Learning OI better.",
-  "version": "1.1.5050",
+  "version": "1.1.5876",
   "preview": true,
   "author": {
     "email": "gugugupai233@gmail.com",
@@ -54,7 +54,11 @@
     "commands": [
       {
         "command": "quick-oi.luogu.problem",
-        "title": "Luogu: Watch Problem"
+        "title": "Luogu: Read Problem"
+      },
+      {
+        "command": "quick-oi.luogu.fate",
+        "title": "Luogu: Fate"
       },
       {
         "command": "quick-oi.luogu.login",
@@ -65,16 +69,16 @@
         "title": "Luogu: Logout"
       },
       {
-        "command": "quick-oi.templates.import",
-        "title": "Templates: Import"
+        "command": "quick-oi.template.import",
+        "title": "Template: Import"
       },
       {
         "command": "quick-oi.vijos.problem",
-        "title": "Vijos: Watch Problem"
+        "title": "Vijos: Read Problem"
       },
       {
-        "command": "quick-oi.templates.settings",
-        "title": "Templates: Settings"
+        "command": "quick-oi.template.settings",
+        "title": "Template: Settings"
       },
       {
         "command": "quick-oi.data.clear",
@@ -85,6 +89,10 @@
       {
         "command": "quick-oi.templates.import",
         "key": "Ctrl+Alt+T Ctrl+Alt+I"
+      },
+      {
+        "command": "quick-oi.luogu.fate",
+        "key": "Ctrl+Alt+L Ctrl+Alt+F"
       },
       {
         "command": "quick-oi.luogu.problem",
