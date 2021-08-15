@@ -319,6 +319,44 @@ function LG_BuildProblemPages(ProblemJson) {
 	//console.log(HTML)
 	return HTML;
 }
+async function loadProblem(pid) {
+	try{
+		var ProblemJson=await LG_API.get('/problem/'+pid+'?_contentOnly');
+		console.log(ProblemJson,ProblemJson.data.currentData.problem.pid);
+		const panel=vscode.window.createWebviewPanel(ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
+													 ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
+													 vscode.ViewColumn.Two,{
+														enableScripts: true,
+														retainContextWhenHidden: true
+													 });
+		console.log(panel);
+		var html=LG_BuildProblemPages(ProblemJson);
+		panel.webview.html=html;
+		vscode.window.showInformationMessage('题目获取完毕！');
+		fs.writeFileSync(QUICK_OI_HOME+'/cache/Luogu-'+pid,html,{
+			encoding: 'utf-8'
+		})
+	}catch(err){
+		console.log('err!')
+		//TODO：读取本地缓存
+		fs.readFile(QUICK_OI_HOME+'/cache/Luogu-'+pid,(err,cache)=>{
+			console.log(err,cache)
+			if(err){
+				vscode.window.showErrorMessage('获取题目失败，请检查网络连接或题号！');
+				return;
+			}
+			const panel=vscode.window.createWebviewPanel('Quick OI 题目缓存',
+													'Quick OI 题目缓存',
+													vscode.ViewColumn.Two,{
+														enableScripts: true,
+														retainContextWhenHidden: true
+													});
+			console.log(panel)
+			panel.webview.html=cache.toString();
+			vscode.window.showInformationMessage('题目在线获取失败，已为您读取缓存！');
+		})
+	}
+}
 //更新后的文件检测
 function checkUpdated() {
 	//检查版本
@@ -488,43 +526,8 @@ function activate(context) {
 			placeHolder: '请输入题号',
 			ignoreFocusOut: true
 		});
-		try{
-			var ProblemJson=await LG_API.get('/problem/'+LG_PID+'?_contentOnly');
-			console.log(ProblemJson,ProblemJson.data.currentData.problem.pid);
-			const panel=vscode.window.createWebviewPanel(ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
-														 ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
-														 vscode.ViewColumn.Two,{
-															enableScripts: true,
-															retainContextWhenHidden: true
-														 });
-			console.log(panel);
-			var html=LG_BuildProblemPages(ProblemJson);
-			panel.webview.html=html;
-			vscode.window.showInformationMessage('题目获取完毕！');
-			fs.writeFileSync(QUICK_OI_HOME+'/cache/Luogu-'+LG_PID,html,{
-				encoding: 'utf-8'
-			})
-		}catch(err){
-			console.log('err!')
-			//TODO：读取本地缓存
-			fs.readFile(QUICK_OI_HOME+'/cache/Luogu-'+LG_PID,(err,cache)=>{
-				console.log(err,cache)
-				if(err){
-					vscode.window.showErrorMessage('获取题目失败，请检查网络连接或题号！');
-					return;
-				}
-				const panel=vscode.window.createWebviewPanel('Quick OI 题目缓存',
-														'Quick OI 题目缓存',
-														vscode.ViewColumn.Two,{
-															enableScripts: true,
-															retainContextWhenHidden: true
-														});
-				console.log(panel)
-				panel.webview.html=cache.toString();
-				vscode.window.showInformationMessage('题目在线获取失败，已为您读取缓存！');
-			})
-		}
-	});
+		loadProblem(LG_PID)
+	});	
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.vijos.problem',async function () {
 		try{
@@ -677,12 +680,13 @@ function activate(context) {
 				'X-Requested-With': 'XMLHttpRequest'
 			},
 		}).catch(err=>{
+			console.log(err.response.status,err.response.data)
 			if(err.response){
-				vscode.window.showErrorMessage(err.response.errorMessage);
-				return err;
+				vscode.window.showErrorMessage(err.response.data.errorMessage);
+				return err.response.data
 			}
 		})
-		console.log(loginStatus)
+		if(loginStatus.status!=200)return;
 		vscode.window.showInformationMessage("登陆成功！洛谷用户名为："+loginStatus.data.username)
 	})
 	context.subscriptions.push(disposable);
@@ -724,8 +728,27 @@ function activate(context) {
 			vscode.window.showInformationMessage(fateStatus.data.message||fateStatus.data.data)
 		}
 		else{
-			vscode.window.showInformationMessage("打卡成功！")
+			let fateReg=new RegExp(/\u00a7 .* \u00a7/);
+			let fate=fateReg.exec(fateStatus.data.more.html)[0].trim()
+			vscode.window.showInformationMessage("打卡成功！今日运势："+fate)
 		}
+	})
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand('quick-oi.luogu.search',async function () {//Search By Tags is not supported!
+		vscode.window.showInformationMessage("Coming Soon...")
+		// let keyword=await vscode.window.showInputBox({
+		// 	placeHolder: "请输入关键词（可留空）"
+		// })
+		// let difficulty=defaultSettings.luoguConfig.difficulty.map((/** @type {any} */ item)=>item).indexOf(await vscode.window.showQuickPick(defaultSettings.luoguConfig.difficulty))
+		// console.log(difficulty)
+		// let getDataByPage = async function(/** @type {any} */ page) {
+		// 	let searchData = await LG_API.get(encodeURI("problem/list?_contentOnly&content=true&page="+String(page)+"&keyword="+keyword+(difficulty===8?"":"&&difficulty="+String(difficulty))))
+		// 	console.log(searchData)
+		// 	return searchData
+		// }
+		// let data = getDataByPage(1)
+		
+
 	})
 	context.subscriptions.push(disposable);
 	init()

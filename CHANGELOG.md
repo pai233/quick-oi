@@ -2,6 +2,10 @@
 
 ![icon_title.png](https://i.loli.net/2021/05/20/zvtV8uTnDLamcWr.png)
 
+## V1.1.5889(20210815_dev)
+修复：
+* 模板快捷键出现`Command Not Found`
+
 ## V1.1.5876(20210809_dev)
 新增：
 * 洛谷每日打卡（快捷键：`Ctrl+Alt+L Ctrl+Alt+F`）

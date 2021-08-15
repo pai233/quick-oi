@@ -2,7 +2,7 @@
   "name": "quick-oi",
   "displayName": "Quick OI",
   "description": "Learning OI better.",
-  "version": "1.1.5876",
+  "version": "1.1.5889",
   "preview": true,
   "author": {
     "email": "gugugupai233@gmail.com",
@@ -57,6 +57,10 @@
         "title": "Luogu: Read Problem"
       },
       {
+        "command": "quick-oi.luogu.search",
+        "title": "Luogu: Search"
+      },
+      {
         "command": "quick-oi.luogu.fate",
         "title": "Luogu: Fate"
       },
@@ -87,12 +91,16 @@
     ],
     "keybindings": [
       {
-        "command": "quick-oi.templates.import",
+        "command": "quick-oi.template.import",
         "key": "Ctrl+Alt+T Ctrl+Alt+I"
       },
       {
         "command": "quick-oi.luogu.fate",
         "key": "Ctrl+Alt+L Ctrl+Alt+F"
+      },
+      {
+        "command": "quick-oi.luogu.search",
+        "key": "Ctrl+Alt+L Ctrl+Alt+S"
       },
       {
         "command": "quick-oi.luogu.problem",
@@ -111,7 +119,7 @@
         "key": "Ctrl+Alt+V Ctrl+Alt+P"
       },
       {
-        "command": "quick-oi.templates.settings",
+        "command": "quick-oi.template.settings",
         "key": "Ctrl+Alt+T Ctrl+Alt+S"
       }
     ]

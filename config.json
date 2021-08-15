@@ -1,5 +1,5 @@
 {
-    "version": "1.1.5876",
+    "version": "1.1.5889",
     "luoguConfig": {
         "difficulty": [
             "暂无评定",
@@ -9,7 +9,8 @@
             "普及+/提高",
             "提高+/省选-",
             "省选/NOI-",
-            "NOI/NOI+/CTSC"
+            "NOI/NOI+/CTSC",
+            "全部"
         ]
     }
 }
