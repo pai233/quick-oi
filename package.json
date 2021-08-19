@@ -2,7 +2,7 @@
   "name": "quick-oi",
   "displayName": "Quick OI",
   "description": "Learning OI better.",
-  "version": "1.1.5889",
+  "version": "1.1.6147",
   "preview": true,
   "author": {
     "email": "gugugupai233@gmail.com",
@@ -87,9 +87,17 @@
       {
         "command": "quick-oi.data.clear",
         "title": "Quick OI: Clear User Data"
+      },
+      {
+        "command": "quick-oi.code.deleteAdnotation",
+        "title": "Quick OI: Delete Code Annotation"
       }
     ],
     "keybindings": [
+      {
+        "command": "quick-oi.code.deleteAdnotation",
+        "key": "Ctrl+Alt+C Ctrl+Alt+D"
+      },
       {
         "command": "quick-oi.template.import",
         "key": "Ctrl+Alt+T Ctrl+Alt+I"

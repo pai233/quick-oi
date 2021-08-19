@@ -23,6 +23,9 @@
 ## 配置类
 * 清除用户数据（按`F1`键，执行`Quick OI: Clear User Data`）
 
+## 代码类
+* 删除代码注释（快捷键：`Ctrl+Alt+C Ctrl+Alt+D`）
+
 ## TODO LIST
 * 模板类
     + 分享模板

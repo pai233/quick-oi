@@ -14,6 +14,7 @@
 | 插入模板  | `Ctrl+Alt+T Ctrl+Alt+I` |Template: Import|
 | 模板设置修改 | `Ctrl+Alt+T Ctrl+Alt+S` |Template: Settings|
 | 清除用户数据 | None |`Quick OI: Clear User Data`|
+|删除代码注释|`Ctrl+Alt+C Ctrl+Alt+D`|Quick OI: Delete Code Annotation|
 
 # 如何使用
 

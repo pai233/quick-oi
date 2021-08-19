@@ -7,6 +7,7 @@ const Cookies = require('tough-cookie');
 const CookieSupport = require("axios-cookiejar-support").default;
 const fs = require('fs-extra');
 const sillyDateTime = require('silly-datetime')
+const annotationDeleter = require('./annotationDeleter')
 const QUICK_OI_HOME = (process.env.HOME || process.env.USERPROFILE)+'/.quick_oi';
 var jar=new Cookies.CookieJar()
 var bar=vscode.window.createStatusBarItem()
@@ -640,7 +641,8 @@ function activate(context) {
 	context.subscriptions.push(disposable);
 	disposable = vscode.commands.registerCommand('quick-oi.template.settings',async function () {
 		//vscode.window.showInformationMessage('正在重修中……')
-		vscode.workspace.openTextDocument(QUICK_OI_HOME+'/template_settings.json').then(doc=>{
+		//使用await防止文件打开在右边
+		await vscode.workspace.openTextDocument(QUICK_OI_HOME+'/template_settings.json').then(doc=>{
 			vscode.window.showTextDocument(doc);
 		});
 		LoadDoc('Quick OI模板设置向导',__dirname+'/doc/template_guide.md')
@@ -749,6 +751,35 @@ function activate(context) {
 		// let data = getDataByPage(1)
 		
 
+	})
+	context.subscriptions.push(disposable);
+	disposable = vscode.commands.registerCommand('quick-oi.code.deleteAdnotation',async function () {
+		let languageSupport = ['C/C++']
+		vscode.window.showQuickPick(languageSupport,{
+			placeHolder: '请选择源代码语言',
+			canPickMany: false
+		}).then(lang=>{
+			let editor=vscode.window.activeTextEditor;
+			let code=editor.document.getText()
+			let codeReplaced = code
+			console.log(code)
+			switch (lang) {
+				case 'C/C++':
+					codeReplaced = annotationDeleter.deleteAnnotation(code,annotationDeleter.LANG_C_CPP)
+					break;
+			
+				default:
+					break;
+			}
+			try{
+				vscode.window.activeTextEditor.edit(editBuilder => {
+					const end=new vscode.Position(vscode.window.activeTextEditor.document.lineCount+1,0);
+					editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), end),codeReplaced);
+				});
+			}catch(err){
+				vscode.window.showErrorMessage('发生了一些奇妙的小错误……')
+			}
+		})
 	})
 	context.subscriptions.push(disposable);
 	init()

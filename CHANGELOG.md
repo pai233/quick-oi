@@ -2,6 +2,10 @@
 
 ![icon_title.png](https://i.loli.net/2021/05/20/zvtV8uTnDLamcWr.png)
 
+## V1.1.6147(20210819_dev)
+新增：
+* 删除代码注释（快捷键：`Ctrl+Alt+C Ctrl+Alt+D`）
+
 ## V1.1.5889(20210815_dev)
 修复：
 * 模板快捷键出现`Command Not Found`
