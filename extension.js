@@ -191,6 +191,7 @@ async function getToken(api) {
 	let token=await LG_API.get(api).then(html=>{
 		var Token_REG=new RegExp(/<meta name="csrf-token" content="(.*)">/);
 		var execData=Token_REG.exec(html.data)
+		console.log(execData)
 		return execData ? execData[1].trim():null
 	})
 	return token;
@@ -322,6 +323,7 @@ function LG_BuildProblemPages(ProblemJson) {
 }
 async function loadProblem(pid) {
 	try{
+		console.log('Get!')
 		var ProblemJson=await LG_API.get('/problem/'+pid+'?_contentOnly');
 		console.log(ProblemJson,ProblemJson.data.currentData.problem.pid);
 		const panel=vscode.window.createWebviewPanel(ProblemJson.data.currentData.problem.pid+'：'+ProblemJson.data.currentData.problem.title,
@@ -536,8 +538,9 @@ function activate(context) {
 				placeHolder: '请输入题号',
 				ignoreFocusOut: true
 			});
+			console.log("loading...");
 			var ProblemHTML=(await VIJOS_API.get('/p/' + VJ_PID)).data;
-			// console.log(ProblemHTML);
+			console.log(ProblemHTML);
 			// console.log(ProblemHTML.split('h1'))
 			// console.log(((ProblemHTML.split('h1')[1]).split('>')))
 			// console.log(((ProblemHTML.split('h1')[1]).split('>')[1]).split('<'))
